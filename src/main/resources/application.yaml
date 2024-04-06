@@ -1,0 +1,28 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/job_portal?replicaSet=mongoReplica
+      auto-index-creation: true
+  mail:
+      host: smtp.mailtrap.io
+      port: 2525
+      username: b9c7e03e0f6050
+      password: 5940533f54686b
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
+logging:
+  level:
+    root: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+app:
+  jwtKey: 36c0d3c58d5969ac434634f1d8af7f7b5d8e86e3e1b760daad3d97391a516bc35eee1d9230c35227bf7462ec021a63a1a105bce7281cd0a4632ffa80c72662ccc6d2a49b8f3cb5a8a5c367117dcf98bba6485c3bbd828f5414020719fcc34e1668f47e521011a4a297a00a70543914e08e376a7a02f3851697cbac8dd3a031962f0e9102348419e4b59bc537e9bcf7b123b5e7a2c077b581b17335c1258bde0f38763b36d86e66d41a1e399506a2793e452b41e0d785384e4e65106c3aa97580d58b2b6648dabb6b18aac3e2414211dbe844697109b47011b32ad77e794bc1b54274bcec5d4799429922da9ddb8a19bf8592d083b2fe382f9cbef16e798f991f
+  jwtExpiration: 2592000000
+  currentAPI: /rest/api/v0
+  homeAPI: ${app.currentAPI}/home
+  userAPI: ${app.currentAPI}/user
+  adminAPI: ${app.currentAPI}/admin

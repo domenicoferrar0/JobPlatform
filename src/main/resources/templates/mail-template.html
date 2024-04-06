@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Our Platform</title>
+</head>
+<body>
+
+<h1>Welcome to Our Platform</h1>
+
+<p>Dear <span th:text="${fullName}"></span>,</p>
+
+<p>Welcome to our platform! We're excited to have you join us.</p>
+
+<p>To get started, please use the following token: <strong th:text="${token}"></strong></p>
+
+<p>If you have any questions or need assistance, feel free to reach out to our support team.</p>
+
+<p>Best regards,<br>
+    [Your Company Name]</p>
+
+</body>
+</html>
