@@ -70,9 +70,7 @@ public class UserService {
         if (userRepository.existsByCf(request.getCf())) {
             throw new DuplicateRegistrationException(request.getCf());
         }
-        log.info("PRE MAPPING");
         User user = userMapper.requestToUser(request);
-        log.info("POST MAPPING");
         user.setRole(Role.ROLE_USER);
         user.setPassword(encoder.encode(user.getPassword()));
 

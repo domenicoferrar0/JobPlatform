@@ -26,3 +26,4 @@ app:
   homeAPI: ${app.currentAPI}/home
   userAPI: ${app.currentAPI}/user
   adminAPI: ${app.currentAPI}/admin
+  employerAPI: ${app.currentAPI}/employer

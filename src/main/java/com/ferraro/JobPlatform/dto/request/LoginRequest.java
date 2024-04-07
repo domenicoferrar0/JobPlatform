@@ -1,10 +1,10 @@
-package com.ferraro.JobPlatform.dto;
+package com.ferraro.JobPlatform.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 @Getter
-public class LoginDTO {
+public class LoginRequest {
     @NotBlank
     private String email;
 

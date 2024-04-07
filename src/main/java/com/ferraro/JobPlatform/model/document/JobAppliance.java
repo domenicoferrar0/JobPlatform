@@ -1,7 +1,7 @@
 package com.ferraro.JobPlatform.model.document;
 
 import com.ferraro.JobPlatform.enums.Country;
-import com.ferraro.JobPlatform.enums.Disponibilità;
+import com.ferraro.JobPlatform.enums.Disponibilita;
 import com.ferraro.JobPlatform.enums.Language;
 import com.ferraro.JobPlatform.model.Formazione;
 import com.ferraro.JobPlatform.model.WorkExperience;
@@ -70,7 +70,7 @@ public class JobAppliance {
 
     private boolean isCategorieProtette;
 
-    private Disponibilità disponibilità;
+    private Disponibilita disponibilita;
 
     @NotBlank
     private String cvPath;

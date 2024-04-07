@@ -2,15 +2,13 @@ package com.ferraro.JobPlatform.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ferraro.JobPlatform.enums.Country;
-import com.ferraro.JobPlatform.enums.Disponibilità;
+import com.ferraro.JobPlatform.enums.Disponibilita;
 import com.ferraro.JobPlatform.enums.Language;
 import com.ferraro.JobPlatform.model.Formazione;
 import com.ferraro.JobPlatform.model.WorkExperience;
-import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -45,16 +43,13 @@ public class JobApplianceDTO {
 
     private String presentazione;
 
-
     private Set<Formazione> formazione;
-
 
     private Set<WorkExperience> esperienzeLavorative;
 
     private boolean isCategorieProtette;
 
-    private Disponibilità disponibilità;
-
+    private Disponibilita disponibilita;
 
     private String cvPath;
 }

@@ -23,8 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
-    //TODO TESTARE AUTHENTICATION
-
     @Value("${app.homeAPI}")
     private String homeAPI;
 
@@ -33,6 +31,9 @@ public class SecurityConfig {
 
     @Value("${app.adminAPI}")
     private String adminAPI;
+
+    @Value("${app.employerAPI}")
+    private String employerAPI;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -66,7 +67,10 @@ public class SecurityConfig {
                             .permitAll();
 
                     registry.requestMatchers("/user/**", userAPI)
-                            .hasAnyAuthority("ROLE_USER","ROLE_ADMIN");
+                            .hasAnyAuthority("ROLE_USER","ROLE_EMPLOYER","ROLE_ADMIN");
+
+                    registry.requestMatchers("/recruiter/**", employerAPI)
+                            .hasAnyAuthority("ROLE_EMPLOYER","ROLE_ADMIN");
 
                     registry.requestMatchers("/admin/**", adminAPI)
                             .hasAnyAuthority("ROLE_ADMIN");

@@ -1,11 +1,17 @@
 package com.ferraro.JobPlatform.dto.request;
 
 import com.ferraro.JobPlatform.enums.Country;
+import com.ferraro.JobPlatform.enums.Disponibilita;
+import com.ferraro.JobPlatform.enums.Modalita;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
-import org.springframework.data.annotation.Id;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
+@Getter
+@NoArgsConstructor
 public class AnnuncioRequest {
 
     @NotNull
@@ -13,11 +19,15 @@ public class AnnuncioRequest {
     private String title;
 
     @NotNull
-    @Size(max = 500, message = "the description allows a maximum of 500 characters")
+    @Size(max = 500, message = "la descrizione può avere un massimo di 500 caratteri")
     private String description;
 
-    @PastOrPresent(message = "publicaton date cannot be in the future")
-    private String publicationDate;
+    @Size(max = 300, message = "l'indirizzo può avere un massimo di 300 caratteri")
+    private String localita;
+
+    private Modalita modalita;
+
+    private Disponibilita disponibilita;
 
     @NotNull
     private Country country;

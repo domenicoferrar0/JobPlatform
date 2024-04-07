@@ -1,6 +1,6 @@
 package com.ferraro.JobPlatform.enums;
 
-public enum Disponibilità {
+public enum Disponibilita {
 
     FULL_TIME("Full-time"),
     PART_TIME("Part-time"),
@@ -8,7 +8,7 @@ public enum Disponibilità {
 
     private final String nome;
 
-    Disponibilità(String nome){
+    Disponibilita(String nome){
         this.nome = nome;
     }
 
