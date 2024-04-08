@@ -9,9 +9,9 @@ import com.ferraro.JobPlatform.exceptions.UserUnauthorizedException;
 import com.ferraro.JobPlatform.exceptions.UsersDontMatchException;
 import com.ferraro.JobPlatform.mappers.AnnuncioMapper;
 import com.ferraro.JobPlatform.model.document.Annuncio;
-import com.ferraro.JobPlatform.model.document.User;
+import com.ferraro.JobPlatform.model.document.Employer;
 import com.ferraro.JobPlatform.repository.AnnuncioRepository;
-import com.ferraro.JobPlatform.repository.UserRepository;
+import com.ferraro.JobPlatform.repository.EmployerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class AnnuncioService {
@@ -37,36 +36,37 @@ public class AnnuncioService {
     @Autowired
     private JwtService jwtService;
 
+
     @Autowired
-    private UserRepository userRepository;
+    private EmployerRepository employerRepository;
 
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private User extractEmployer(String authorization) {
+    private Employer extractEmployer(String authorization) {
         String jwt = authorization.substring(7);
         String email = jwtService.extractSubject(jwt);
-        User user = userRepository.findByEmail(email)
+        Employer employer = employerRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException());
-        if (user.getRole() != Role.ROLE_EMPLOYER) {
-            throw new UserUnauthorizedException(user.getRole());
+        if (employer.getRole() != Role.ROLE_EMPLOYER) {
+            throw new UserUnauthorizedException(employer.getRole());
         }
-        return user;
+        return employer;
     }
 
     public AnnuncioDTO saveAnnuncio(String authorization, AnnuncioRequest requestBody) {
-        User employer = extractEmployer(authorization);
+        Employer employer = extractEmployer(authorization);
         Annuncio annuncio = annuncioMapper.requestToAnnuncio(requestBody);
         annuncio.setPublicationDate(LocalDate.now());
-        annuncio.setRecruiterId(employer.getId());
+        annuncio.setEmployerId(employer.getId());
         return annuncioMapper.annuncioToDTO(annuncioRepository.save(annuncio));
     }
 
     public boolean deleteAnnuncio(String idAnnuncio, String authorization) {
         Annuncio annuncio = annuncioRepository.findById(idAnnuncio)
                 .orElseThrow(() -> new AnnuncioNotFoundException(idAnnuncio));
-        User employer = extractEmployer(authorization);
-        if (annuncio.getRecruiterId() != employer.getId()) {
+        Employer employer = extractEmployer(authorization);
+        if (annuncio.getEmployerId() != employer.getId()) {
             throw new UsersDontMatchException();
         }
         Query query = new Query(Criteria.where("_id").is(idAnnuncio));
@@ -76,8 +76,8 @@ public class AnnuncioService {
     public AnnuncioDTO updateAnnuncio(String idAnnuncio, String authorization, AnnuncioRequest requestBody) {
         Annuncio annuncio = annuncioRepository.findById(idAnnuncio)
                 .orElseThrow(() -> new AnnuncioNotFoundException(idAnnuncio));
-        User employer = extractEmployer(authorization);
-        if (annuncio.getRecruiterId() != employer.getId()) {
+        Employer employer = extractEmployer(authorization);
+        if (annuncio.getEmployerId() != employer.getId()) {
             throw new UsersDontMatchException();
         }
         Annuncio annuncioAggiornato = annuncioMapper.updateAnnuncio(annuncio, requestBody);
@@ -85,9 +85,9 @@ public class AnnuncioService {
     }
 
     public Page<AnnuncioDTO> findAnnunciByRecruiter(String authorization, int pageNumber, int pageSize) {
-        User employer = extractEmployer(authorization);
+        Employer employer = extractEmployer(authorization);
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("publicationDate"));
-        Page<Annuncio> page = annuncioRepository.findAllByRecruiterId(employer.getId(), pageable);
+        Page<Annuncio> page = annuncioRepository.findAllByEmployerId(employer.getId(), pageable);
         return page.map(annuncioMapper::annuncioToDTO);
     }
 
@@ -102,9 +102,9 @@ public class AnnuncioService {
         return page.map(annuncioMapper::annuncioToDTO);
     }
 
-    public AnnuncioDTO findAnnuncioById(String id){
+    public AnnuncioDTO findAnnuncioById(String id) {
         return annuncioRepository.findById(id)
                 .map(annuncioMapper::annuncioToDTO)
-                .orElseThrow(()-> new AnnuncioNotFoundException(id));
+                .orElseThrow(() -> new AnnuncioNotFoundException(id));
     }
 }

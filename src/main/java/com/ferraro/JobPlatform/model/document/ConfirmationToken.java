@@ -1,6 +1,8 @@
 package com.ferraro.JobPlatform.model.document;
 
+import com.ferraro.JobPlatform.enums.Role;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.Getter;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -18,14 +20,20 @@ public class ConfirmationToken {
 
     @NotBlank
     @Indexed
-    private String userId;
+    private String accountId;
 
     @PastOrPresent
     private LocalDate creationDate;
 
-    public ConfirmationToken(String userId) {
+    @NotNull
+    private Role accountRole;
+
+    public ConfirmationToken(String accountId, Role accountRole) {
         this.token = UUID.randomUUID().toString();
-        this.userId = userId;
+        this.accountId = accountId;
         this.creationDate = LocalDate.now();
+        this.accountRole = accountRole;
     }
+
+
 }

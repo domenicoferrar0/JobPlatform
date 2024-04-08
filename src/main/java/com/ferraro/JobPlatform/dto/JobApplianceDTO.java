@@ -20,36 +20,20 @@ import java.util.Set;
 public class JobApplianceDTO {
 
     private String id;
-
     private String idAnnuncio;
-
     private String nome;
-
     private String cognome;
-
     private String cf;
-
     private String email;
-
     private String tel;
-
     private LocalDate nascita;
-
     private Country nazionalita;
-
     private String indirizzo;
-
     private Set<Language> languages;
-
     private String presentazione;
-
     private Set<Formazione> formazione;
-
     private Set<WorkExperience> esperienzeLavorative;
-
     private boolean isCategorieProtette;
-
     private Disponibilita disponibilita;
-
     private String cvPath;
 }

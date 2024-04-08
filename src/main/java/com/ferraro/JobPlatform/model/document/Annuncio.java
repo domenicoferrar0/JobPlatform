@@ -27,7 +27,10 @@ public class Annuncio {
 
     @NotBlank
     @Indexed
-    private String recruiterId;
+    private String employerId;
+
+    @NotBlank
+    private String employerName;
 
     @NotNull
     @Size(min = 10, max = 30, message = "title must be between 10 and 30 characters")
@@ -39,7 +42,6 @@ public class Annuncio {
 
     @PastOrPresent(message = "la data di pubblicazione non può essere nel futuro")
     private LocalDate publicationDate;
-
 
     private LocalDate updateDate;
 

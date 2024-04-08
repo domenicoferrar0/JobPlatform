@@ -17,6 +17,7 @@ import java.time.LocalDate;
 public class AnnuncioDTO {
 
     private String id;
+    private String employerName;
     private String title;
     private String description;
     private LocalDate publicationDate;

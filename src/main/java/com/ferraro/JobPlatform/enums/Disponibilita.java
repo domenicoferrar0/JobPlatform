@@ -4,7 +4,7 @@ public enum Disponibilita {
 
     FULL_TIME("Full-time"),
     PART_TIME("Part-time"),
-    FLESSIBILIE("Flessibile");
+    FLESSIBILE("Flessibile");
 
     private final String nome;
 

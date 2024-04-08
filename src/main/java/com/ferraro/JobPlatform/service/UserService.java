@@ -1,7 +1,7 @@
 package com.ferraro.JobPlatform.service;
 
 import com.ferraro.JobPlatform.dto.UserDTO;
-import com.ferraro.JobPlatform.dto.request.SignUpRequest;
+import com.ferraro.JobPlatform.dto.request.UserSignUpRequest;
 import com.ferraro.JobPlatform.enums.Role;
 import com.ferraro.JobPlatform.exceptions.ConfirmationTokenNotFoundException;
 import com.ferraro.JobPlatform.exceptions.DuplicateRegistrationException;
@@ -26,49 +26,35 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class UserService {
 
+    /*TODO USARE USER E EMPLOYER REPOSITORY SEPARATI CON DIFFERENTI COLLECTIONS
+     * CREARE ACCOUNT FACTORY, CON METODI:
+     * PER CONTROLLARE SE ESISTE UNA MAIL IN ENTRAMBE LE COLLECTIONS
+     * PER RITORNARE UN ACCOUNT ANDANDO A PESCARE DA ENTRAMBE LE COLLECTIONS
+     *
+     * */
+
+    @Autowired
+    private AccountService accountService;
+
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private ConfirmationTokenRepository tokenRepository;
 
     @Autowired
     private UserMapper userMapper;
+
     @Autowired
     private PasswordEncoder encoder;
 
     @Autowired
     private MailService mailService;
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+
+    //TODO CREARE METODO APPOSITO PER SALVARE EMPOLYER, IN MODO DA FARE SEPARATION OF CONCERNS
 
     @Transactional
-    public boolean confirmToken(String token) {
-        ConfirmationToken confirmationToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new ConfirmationTokenNotFoundException());
-        User user = userRepository.findById(confirmationToken.getUserId())
-                .orElseThrow(() -> new UserNotFoundException());
-        user.setEnabled(true);
-        userRepository.save(user);
-        Query query = new Query(Criteria.where("_id").is(confirmationToken.getId()));
-        return mongoTemplate.remove(query, ConfirmationToken.class).getDeletedCount() > 0;
-
-    }
-
-    @Transactional
-    public String createConfirmationToken(String userId) {
-        ConfirmationToken token = new ConfirmationToken(userId);
-        tokenRepository.save(token);
-        return token.getToken();
-    }
-
-    @Transactional
-    public UserDTO saveUser(SignUpRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+    public UserDTO saveUser(UserSignUpRequest request) {
+        if (accountService.existsByEmail(request.getEmail())) {
             throw new DuplicateRegistrationException(request.getEmail());
-        }
-        if (userRepository.existsByCf(request.getCf())) {
-            throw new DuplicateRegistrationException(request.getCf());
         }
         User user = userMapper.requestToUser(request);
         user.setRole(Role.ROLE_USER);
@@ -76,12 +62,10 @@ public class UserService {
 
         //Viene salvato, il repository ritorna l'entità salvata che a sua volta viene mappata in DTO
         UserDTO newUser = userMapper.userToDto(userRepository.save(user));
-        String token = createConfirmationToken(newUser.getId());
-
+        String token = accountService.createConfirmationToken(newUser.getId(), Role.ROLE_USER);
         try {
             mailService.sendRegistrationMail(user, token);
         } catch (MessagingException e) {
-            log.error("MAIL NON MANDATA", e);
             throw new MailNotSentException();
         }
         //Viene salvato, il repository ritorna l'entità salvata che a sua volta viene mappata in DTO

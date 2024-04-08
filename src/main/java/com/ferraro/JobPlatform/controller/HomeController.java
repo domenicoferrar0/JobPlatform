@@ -1,14 +1,12 @@
 package com.ferraro.JobPlatform.controller;
 
 import com.ferraro.JobPlatform.dto.AnnuncioDTO;
-import com.ferraro.JobPlatform.dto.request.LoginRequest;
+import com.ferraro.JobPlatform.dto.EmployerDTO;
 import com.ferraro.JobPlatform.dto.UserDTO;
-import com.ferraro.JobPlatform.dto.request.SignUpRequest;
-import com.ferraro.JobPlatform.enums.Role;
-import com.ferraro.JobPlatform.service.AnnuncioService;
-import com.ferraro.JobPlatform.service.JwtService;
-import com.ferraro.JobPlatform.service.UserDetailsServiceImpl;
-import com.ferraro.JobPlatform.service.UserService;
+import com.ferraro.JobPlatform.dto.request.EmployerSignUpRequest;
+import com.ferraro.JobPlatform.dto.request.LoginRequest;
+import com.ferraro.JobPlatform.dto.request.UserSignUpRequest;
+import com.ferraro.JobPlatform.service.*;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +26,6 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class HomeController {
 
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private UserDetailsServiceImpl userDetails;
@@ -43,20 +39,32 @@ public class HomeController {
     @Autowired
     private AnnuncioService annuncioService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private EmployerService employerService;
+
+    @Autowired
+    private AccountService accountService;
+
+
     @PostMapping("/signup")
-    public ResponseEntity<UserDTO> userSignUp(@NonNull @Valid @RequestBody SignUpRequest requestBody) {
+    public ResponseEntity<UserDTO> userSignUp(@NonNull @Valid @RequestBody UserSignUpRequest requestBody) {
         log.info("REGISTRA<IONE");
         return ResponseEntity.ok(userService.saveUser(requestBody));
     }
 
-    @PostMapping //TODO CREARE DOCUMENT SEPARATO PER GLI EMPLOYER
-    public ResponseEntity<UserDTO> employerSignUp(@NonNull @RequestBody @Valid SignUpRequest requestBody){
-        return ResponseEntity.ok(userService.saveUser(requestBody));
+    @PostMapping("employer-signup")
+    //TODO CREARE CLASSE SEPARATA PER GLI EMPLOYER CON P.IVA, NOME Azienda e vari dati relativi DA EMBEDDARE UN USER
+    public ResponseEntity<EmployerDTO> employerSignUp(@NonNull @RequestBody @Valid EmployerSignUpRequest requestBody) {
+        log.info("PARTITA IVA",requestBody.getPartitaIva());
+        return ResponseEntity.ok(employerService.saveEmployer(requestBody));
     }
 
     @PutMapping("/confirmation")
     public ResponseEntity<String> confirmUser(@NonNull @RequestParam("token") String token) {
-        if (!userService.confirmToken(token)) {
+        if (!accountService.confirmToken(token)) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Si è verificato un errore, impossibile verificare l'account");
@@ -80,13 +88,13 @@ public class HomeController {
 
     @GetMapping("/annunci/{page}")
     public ResponseEntity<Page<AnnuncioDTO>> getAllAnnunci(@RequestParam(value = "searchTerm", required = false) String searchTerm,
-                                                           @PathVariable("page") int currentPage){
+                                                           @PathVariable("page") int currentPage) {
         int pageSize = 10;
         return ResponseEntity.ok(annuncioService.findAllAnnunci(currentPage, pageSize, searchTerm));
     }
 
     @GetMapping("annuncio/{id}")
-    public ResponseEntity<AnnuncioDTO> findById(@PathVariable("id")String annuncioId){
+    public ResponseEntity<AnnuncioDTO> findById(@PathVariable("id") String annuncioId) {
         return ResponseEntity.ok(annuncioService.findAnnuncioById(annuncioId));
     }
 

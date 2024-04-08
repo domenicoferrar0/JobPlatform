@@ -3,6 +3,7 @@ package com.ferraro.JobPlatform.exceptions;
 import com.ferraro.JobPlatform.model.document.ConfirmationToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -32,7 +33,8 @@ public class GlobalExceptionHandler {
                 .body(map);
     }
 
-    @ExceptionHandler({ConfirmationTokenNotFoundException.class, UserNotFoundException.class})
+    @ExceptionHandler({ConfirmationTokenNotFoundException.class, UserNotFoundException.class,
+                       UsernameNotFoundException.class})
     public ResponseEntity<String> notFoundExceptions(RuntimeException ex){
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ex.getMessage());
@@ -46,7 +48,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotEnabledException.class)
     public ResponseEntity<String> notEnabledException(UserNotEnabledException ex){
+        System.out.println("USERNOTENABLED HANDLED");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ex.getMessage());
     }
+
+
 }
