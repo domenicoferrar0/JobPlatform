@@ -33,7 +33,7 @@ public class Annuncio {
     private String employerName;
 
     @NotNull
-    @Size(min = 10, max = 30, message = "title must be between 10 and 30 characters")
+    @Size(min = 10, max = 30, message = "il titolo deve essere tra i 10 e 30 caratteri")
     private String title;
 
     @NotNull

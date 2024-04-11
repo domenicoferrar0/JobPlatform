@@ -44,9 +44,9 @@ public class EmployerController {
     }
 
     @GetMapping("/annunci/{page}")
-    public ResponseEntity<Page<AnnuncioDTO>>findAnnunciByRecruiter(@NonNull @RequestHeader("Authorization") String authorization,
+    public ResponseEntity<Page<AnnuncioDTO>>findAnnunciByEmployer(@NonNull @RequestHeader("Authorization") String authorization,
                                                                    @PathVariable("page") int currentPage){
         int pageSize = 10;
-        return ResponseEntity.ok(annuncioService.findAnnunciByRecruiter(authorization, currentPage, pageSize));
+        return ResponseEntity.ok(annuncioService.findAnnunciByEmployer(authorization, currentPage, pageSize));
     }
 }

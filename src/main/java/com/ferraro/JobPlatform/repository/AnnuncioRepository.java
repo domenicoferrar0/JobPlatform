@@ -15,6 +15,7 @@ public interface AnnuncioRepository extends MongoRepository<Annuncio, String> {
 
     @Query("{$or: [{'title': { $regex: ?0, $options: 'i' }}, " +
             "{'description': { $regex: ?0, $options: 'i' }}, " +
+            "{'employerName': { $regex: ?0, $options: 'i' }}, "+
             "{'localita': { $regex: ?0, $options: 'i' }}, " +
             "{'modalita': ?0 }, " +
             "{'disponibilita': ?0 }, " +

@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class HomeController {
 
-
     @Autowired
     private UserDetailsServiceImpl userDetails;
 
@@ -56,7 +55,6 @@ public class HomeController {
     }
 
     @PostMapping("employer-signup")
-    //TODO CREARE CLASSE SEPARATA PER GLI EMPLOYER CON P.IVA, NOME Azienda e vari dati relativi DA EMBEDDARE UN USER
     public ResponseEntity<EmployerDTO> employerSignUp(@NonNull @RequestBody @Valid EmployerSignUpRequest requestBody) {
         log.info("PARTITA IVA",requestBody.getPartitaIva());
         return ResponseEntity.ok(employerService.saveEmployer(requestBody));

@@ -6,14 +6,21 @@ import com.ferraro.JobPlatform.enums.Language;
 import com.ferraro.JobPlatform.model.Formazione;
 import com.ferraro.JobPlatform.model.WorkExperience;
 import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.Set;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class JobApplianceRequest {
 
     @NotNull
-    private String idAnnuncio;
+    private MultipartFile file;
 
     @NotNull
     private String nome;

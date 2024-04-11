@@ -29,6 +29,13 @@ public class JobAppliance {
     @Indexed
     private String idAnnuncio;
 
+    @NotBlank
+    @Indexed
+    private String userId;
+
+    @NotBlank
+    private String titleAnnuncio;
+
     @NotNull
     private String nome;
 

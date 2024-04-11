@@ -20,7 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private AccountService accountService;
 
-    @Override //TODO ANDARE A CERCARE ACCOUNT IN BOTH COLLECTIONS
+    @Override
     public UserDetails loadUserByUsername(String username){
         Account account = accountService.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Utente non registrato ".concat(username)));

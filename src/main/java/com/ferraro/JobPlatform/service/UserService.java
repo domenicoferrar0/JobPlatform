@@ -2,22 +2,18 @@ package com.ferraro.JobPlatform.service;
 
 import com.ferraro.JobPlatform.dto.UserDTO;
 import com.ferraro.JobPlatform.dto.request.UserSignUpRequest;
+import com.ferraro.JobPlatform.enums.Resource;
 import com.ferraro.JobPlatform.enums.Role;
-import com.ferraro.JobPlatform.exceptions.ConfirmationTokenNotFoundException;
 import com.ferraro.JobPlatform.exceptions.DuplicateRegistrationException;
 import com.ferraro.JobPlatform.exceptions.MailNotSentException;
-import com.ferraro.JobPlatform.exceptions.UserNotFoundException;
+import com.ferraro.JobPlatform.exceptions.ResourceNotFoundException;
+import com.ferraro.JobPlatform.exceptions.UserUnauthorizedException;
 import com.ferraro.JobPlatform.mappers.UserMapper;
-import com.ferraro.JobPlatform.model.document.ConfirmationToken;
 import com.ferraro.JobPlatform.model.document.User;
-import com.ferraro.JobPlatform.repository.ConfirmationTokenRepository;
 import com.ferraro.JobPlatform.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,8 +44,20 @@ public class UserService {
     @Autowired
     private MailService mailService;
 
+    @Autowired
+    private JwtService jwtService;
 
-    //TODO CREARE METODO APPOSITO PER SALVARE EMPOLYER, IN MODO DA FARE SEPARATION OF CONCERNS
+    public User extractUser(String authorization) {
+        String jwt = authorization.substring(7);
+        String email = jwtService.extractSubject(jwt);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException(Resource.USER));
+        if (user.getRole() != Role.ROLE_USER) {
+            throw new UserUnauthorizedException(user.getRole());
+        }
+        return user;
+    }
+
 
     @Transactional
     public UserDTO saveUser(UserSignUpRequest request) {

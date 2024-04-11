@@ -1,4 +1,8 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: 1MB
+      max-request-size: 1MB
   data:
     mongodb:
       uri: mongodb://localhost:27017/job_portal?replicaSet=mongoReplica
@@ -27,3 +31,4 @@ app:
   userAPI: ${app.currentAPI}/user
   adminAPI: ${app.currentAPI}/admin
   employerAPI: ${app.currentAPI}/employer
+  basePath: C:\\Users\\domy5\\Desktop\\fileDirectory\\

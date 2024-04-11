@@ -21,6 +21,8 @@ public class JobApplianceDTO {
 
     private String id;
     private String idAnnuncio;
+    private String userId;
+    private String titleAnnuncio;
     private String nome;
     private String cognome;
     private String cf;

@@ -1,7 +1,6 @@
 package com.ferraro.JobPlatform.service;
 
 import com.ferraro.JobPlatform.model.Account;
-import com.ferraro.JobPlatform.model.document.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
