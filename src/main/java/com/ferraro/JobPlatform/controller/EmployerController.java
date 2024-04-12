@@ -18,6 +18,8 @@ public class EmployerController {
     @Autowired
     private AnnuncioService annuncioService;
 
+    //TODO TEST CREAzIONE ANNUNCI, APPLIANCE, VERIFICARE SALVATAGGIO DOCUMENT E PDF ASSOCIATI, VERIFICARE SE VENGONO CANCELLATI
+
 
     @PostMapping("/annuncio")
     public ResponseEntity<AnnuncioDTO> saveAnnuncio(@NonNull @RequestHeader("Authorization") String authorization,

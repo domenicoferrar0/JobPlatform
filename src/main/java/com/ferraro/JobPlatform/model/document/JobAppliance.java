@@ -72,7 +72,7 @@ public class JobAppliance {
     @NotEmpty
     private Set<Formazione> formazione;
 
-    @NotEmpty
+
     private Set<WorkExperience> esperienzeLavorative;
 
     private boolean isCategorieProtette;

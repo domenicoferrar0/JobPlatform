@@ -1,2 +1,31 @@
 IMPLEMENTARE LOGICA DI REGISTRAzIONE USER E MAIL SENDER, CON RUOLO E PASSWORD ENCRYPTION, DEFINIRE CLASS DI SICUREzzA
 GESTIRE GLI ENDPOINT CREANDO AUTHORITY A PARTIRE DA ROLE
+
+
+{
+  "nome": "John",
+  "cognome": "Doe",
+  "cf": "RSSMRA80A01H501Z",
+  "email": "johndoe@example.com",
+  "nascita": "1980-01-01",
+  "nazionalita": "CUBA",
+  "languages": ["ENGLISH"],
+  "presentazione": "I am a highly motivated professional...",
+  "formazione": [
+    {
+      "titoloStudio": "Bachelor's Degree",
+      "istituto": "University of Example",
+      "annoInizio": "2000-09-01",
+      "annoFine": "2004-06-01"
+    },
+    {
+      "titoloStudio": "LAUREA_TRIENNALE",
+      "istituto": "Institute of Example",
+      "annoInizio": "2005-09-01",
+      "annoFine": "2007-06-01"
+    }
+  ],
+
+  "isCategorieProtette": true,
+  "disponibilita": "FULL-TIME"
+}

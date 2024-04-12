@@ -22,13 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class UserService {
 
-    /*TODO USARE USER E EMPLOYER REPOSITORY SEPARATI CON DIFFERENTI COLLECTIONS
-     * CREARE ACCOUNT FACTORY, CON METODI:
-     * PER CONTROLLARE SE ESISTE UNA MAIL IN ENTRAMBE LE COLLECTIONS
-     * PER RITORNARE UN ACCOUNT ANDANDO A PESCARE DA ENTRAMBE LE COLLECTIONS
-     *
-     * */
-
     @Autowired
     private AccountService accountService;
 

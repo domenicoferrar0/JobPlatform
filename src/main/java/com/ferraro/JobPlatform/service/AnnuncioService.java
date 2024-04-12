@@ -8,7 +8,9 @@ import com.ferraro.JobPlatform.exceptions.UsersDontMatchException;
 import com.ferraro.JobPlatform.mappers.AnnuncioMapper;
 import com.ferraro.JobPlatform.model.document.Annuncio;
 import com.ferraro.JobPlatform.model.document.Employer;
+import com.ferraro.JobPlatform.model.document.JobAppliance;
 import com.ferraro.JobPlatform.repository.AnnuncioRepository;
+import com.ferraro.JobPlatform.repository.JobApplianceRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,9 +21,11 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -30,14 +34,19 @@ public class AnnuncioService {
     private AnnuncioRepository annuncioRepository;
 
     @Autowired
+    private JobApplianceRepository applianceRepository;
+
+    @Autowired
     private AnnuncioMapper annuncioMapper;
 
     @Autowired
     private EmployerService employerService;
 
-
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private FileService fileService;
 
 
 
@@ -50,6 +59,7 @@ public class AnnuncioService {
         return annuncioMapper.annuncioToDTO(annuncioRepository.save(annuncio));
     }
 
+    @Transactional
     public boolean deleteAnnuncio(String idAnnuncio, String authorization) {
         Annuncio annuncio = annuncioRepository.findById(idAnnuncio)
                 .orElseThrow(() -> new ResourceNotFoundException(Resource.ANNUNCIO, idAnnuncio));
@@ -57,8 +67,19 @@ public class AnnuncioService {
         if (!annuncio.getEmployerId().equals(employer.getId())) {
             throw new UsersDontMatchException();
         }
+        List<JobAppliance> appliances = applianceRepository.findAllByAnnuncioId(idAnnuncio);
         Query query = new Query(Criteria.where("_id").is(idAnnuncio));
-        return mongoTemplate.remove(query, Annuncio.class).getDeletedCount() > 0;
+        if (mongoTemplate.remove(query, Annuncio.class).getDeletedCount() > 0) {
+            return fileCleanUp(appliances);
+        }
+        return false;
+    }
+
+    public boolean fileCleanUp(List<JobAppliance> appliances){
+        for(JobAppliance appliance : appliances){
+            fileService.delete(appliance.getCvPath());
+        }
+        return true;
     }
 
     public AnnuncioDTO updateAnnuncio(String idAnnuncio, String authorization, AnnuncioRequest requestBody) {

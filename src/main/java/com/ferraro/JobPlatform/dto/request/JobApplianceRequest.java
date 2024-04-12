@@ -20,9 +20,6 @@ import java.util.Set;
 public class JobApplianceRequest {
 
     @NotNull
-    private MultipartFile file;
-
-    @NotNull
     private String nome;
 
     @NotNull
@@ -58,7 +55,7 @@ public class JobApplianceRequest {
     @NotEmpty
     private Set<Formazione> formazione;
 
-    @NotEmpty
+
     private Set<WorkExperience> esperienzeLavorative;
 
     private boolean isCategorieProtette;
