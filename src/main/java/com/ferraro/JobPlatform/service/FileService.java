@@ -1,6 +1,7 @@
 package com.ferraro.JobPlatform.service;
 
 import com.ferraro.JobPlatform.exceptions.FileHandlingException;
+import com.ferraro.JobPlatform.model.document.JobAppliance;
 import org.apache.tika.detect.DefaultDetector;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.io.TikaInputStream;
@@ -12,6 +13,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class FileService {
@@ -38,8 +44,8 @@ public class FileService {
         return mediaType.equals(MediaType.application("pdf"));
     }
 
-    public String savePdf(MultipartFile file, String cf) {
-        String fileName = cf.concat(".pdf");
+    public String savePdf(MultipartFile file) {
+        String fileName = UUID.randomUUID().toString() + ".pdf";
         File destination = new File(PATH, fileName);
         try {
             file.transferTo(destination);
@@ -51,9 +57,28 @@ public class FileService {
 
     public boolean delete(String cvPath) {
         File file = new File(PATH, cvPath);
+        System.out.println("/n PATH " + cvPath + "/n /n /n");
         try {
             return file.delete();
         } catch (SecurityException e) {
+            throw new FileHandlingException();
+        }
+    }
+
+    public boolean fileCleanUp(List<JobAppliance> appliances) {
+        for (JobAppliance appliance : appliances) {
+            delete(appliance.getCvPath());
+        }
+        return true;
+    }
+
+    public byte[] getFile(String cvPath) {
+
+        try {
+            Path filePath = Paths.get(PATH, cvPath);
+            return Files.readAllBytes(filePath);
+        }
+        catch(IOException | RuntimeException e){
             throw new FileHandlingException();
         }
     }

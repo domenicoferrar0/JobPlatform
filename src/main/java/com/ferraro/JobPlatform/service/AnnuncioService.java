@@ -70,17 +70,13 @@ public class AnnuncioService {
         List<JobAppliance> appliances = applianceRepository.findAllByAnnuncioId(idAnnuncio);
         Query query = new Query(Criteria.where("_id").is(idAnnuncio));
         if (mongoTemplate.remove(query, Annuncio.class).getDeletedCount() > 0) {
-            return fileCleanUp(appliances);
+            applianceRepository.deleteAll(appliances);
+            return fileService.fileCleanUp(appliances);
+
         }
         return false;
     }
 
-    public boolean fileCleanUp(List<JobAppliance> appliances){
-        for(JobAppliance appliance : appliances){
-            fileService.delete(appliance.getCvPath());
-        }
-        return true;
-    }
 
     public AnnuncioDTO updateAnnuncio(String idAnnuncio, String authorization, AnnuncioRequest requestBody) {
         Annuncio annuncio = annuncioRepository.findById(idAnnuncio)

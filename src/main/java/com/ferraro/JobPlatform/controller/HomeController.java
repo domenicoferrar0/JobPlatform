@@ -50,13 +50,11 @@ public class HomeController {
 
     @PostMapping("/signup")
     public ResponseEntity<UserDTO> userSignUp(@NonNull @Valid @RequestBody UserSignUpRequest requestBody) {
-        log.info("REGISTRA<IONE");
         return ResponseEntity.ok(userService.saveUser(requestBody));
     }
 
     @PostMapping("employer-signup")
     public ResponseEntity<EmployerDTO> employerSignUp(@NonNull @RequestBody @Valid EmployerSignUpRequest requestBody) {
-        log.info("PARTITA IVA",requestBody.getPartitaIva());
         return ResponseEntity.ok(employerService.saveEmployer(requestBody));
     }
 

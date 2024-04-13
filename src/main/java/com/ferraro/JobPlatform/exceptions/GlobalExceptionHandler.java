@@ -14,9 +14,15 @@ import java.util.List;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({MailNotSentException.class, FileHandlingException.class})
-    public ResponseEntity<String> mailNotSent(RuntimeException ex) {
+    @ExceptionHandler(MailNotSentException.class)
+    public ResponseEntity<String> mailNotSent(MailNotSentException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(FileHandlingException.class)
+    public ResponseEntity<String> fileHandling(FileHandlingException ex){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ex.getMessage());
     }
 
@@ -37,8 +43,8 @@ public class GlobalExceptionHandler {
                 .body(ex.getMessage());
     }
 
-    @ExceptionHandler(DuplicateRegistrationException.class)
-    public ResponseEntity<String> registrationException(DuplicateRegistrationException ex) {
+    @ExceptionHandler({DuplicateRegistrationException.class, DuplicateApplianceException.class})
+    public ResponseEntity<String> registrationException(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ex.getMessage());
     }

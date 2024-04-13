@@ -1,6 +1,8 @@
 package com.ferraro.JobPlatform.configuration;
 
 import com.ferraro.JobPlatform.service.UserDetailsServiceImpl;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @EnableWebSecurity
 @Configuration
+@Slf4j
 public class SecurityConfig {
 
     @Value("${app.homeAPI}")
@@ -34,6 +37,13 @@ public class SecurityConfig {
 
     @Value("${app.employerAPI}")
     private String employerAPI;
+
+    @PostConstruct
+    public void init() {
+        System.out.println("User API: " + userAPI);
+        System.out.println("Admin API: " + adminAPI);
+        System.out.println("Employer API: " + employerAPI);
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -61,18 +71,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        log.info("\n EMPLOYER API\n", employerAPI);
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry->{
                     registry.requestMatchers("/home/**", homeAPI+"/**")
                             .permitAll();
 
-                    registry.requestMatchers("/user/**", userAPI)
+                    registry.requestMatchers("/user/**", userAPI+"/**")
                             .hasAnyAuthority("ROLE_USER","ROLE_EMPLOYER","ROLE_ADMIN");
 
-                    registry.requestMatchers("/recruiter/**", employerAPI)
+                    registry.requestMatchers("/employer/**", employerAPI+"/**")
                             .hasAnyAuthority("ROLE_EMPLOYER","ROLE_ADMIN");
 
-                    registry.requestMatchers("/admin/**", adminAPI)
+                    registry.requestMatchers("/admin/**", adminAPI+"/**")
                             .hasAnyAuthority("ROLE_ADMIN");
 
                     registry.anyRequest()

@@ -1,19 +1,22 @@
 package com.ferraro.JobPlatform.service;
 
 import com.ferraro.JobPlatform.dto.JobApplianceDTO;
+import com.ferraro.JobPlatform.dto.JobApplianceDTOSimple;
 import com.ferraro.JobPlatform.dto.request.JobApplianceRequest;
 import com.ferraro.JobPlatform.enums.Resource;
-import com.ferraro.JobPlatform.exceptions.ApplianceSavingFailureException;
-import com.ferraro.JobPlatform.exceptions.FileHandlingException;
-import com.ferraro.JobPlatform.exceptions.ResourceNotFoundException;
-import com.ferraro.JobPlatform.exceptions.UsersDontMatchException;
+import com.ferraro.JobPlatform.exceptions.*;
 import com.ferraro.JobPlatform.mappers.JobApplianceMapper;
 import com.ferraro.JobPlatform.model.document.Annuncio;
+import com.ferraro.JobPlatform.model.document.Employer;
 import com.ferraro.JobPlatform.model.document.JobAppliance;
 import com.ferraro.JobPlatform.model.document.User;
 import com.ferraro.JobPlatform.repository.AnnuncioRepository;
 import com.ferraro.JobPlatform.repository.JobApplianceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +32,9 @@ public class JobApplianceService {
     private FileService fileService;
 
     @Autowired
+    private EmployerService employerService;
+
+    @Autowired
     private JobApplianceMapper applianceMapper;
 
     @Autowired
@@ -37,21 +43,24 @@ public class JobApplianceService {
     @Autowired
     private JwtService jwtService;
 
-    //TODO VERIFICARE CHE CON ELIMINA<IONE ANNUNCI VENGA ELIMINATO IL FILE, DA IMPLEMENTARE LOGICA PER EVITARE CHE STESSO UTENTE FACCIA PIU APPLIANCE
 
     public JobApplianceDTO saveAppliance(JobApplianceRequest applianceRequest, String annuncioId, String authorization, MultipartFile file) {
-        if (!fileService.isValid(file)) {
-            throw new FileHandlingException("Spiacente, il file non è conforme alla dimensione e al formato richiesti.");
+        if (file.isEmpty() || !fileService.isValid(file)) {
+            throw new FileHandlingException("Spiacente, inserire un file del formato e delle dimensioni richiesti.");
         }
+
         Annuncio annuncio = annuncioRepository.findById(annuncioId)
                 .orElseThrow(() -> new ResourceNotFoundException(Resource.ANNUNCIO, annuncioId));
         User user = userService.extractUser(authorization);
-        //TODO CODICE CHE VEDE SE ESISTONO GIA ALTRE APPLIANCE CON STESSO ANNUNCIO ID E USER ID
+        if(applianceRepository.existsByIdAnnuncioAndUserId(annuncioId, user.getId())){
+            throw new DuplicateApplianceException();
+        }
         JobAppliance appliance = applianceMapper.requestToAppliance(applianceRequest);
         appliance.setIdAnnuncio(annuncioId);
         appliance.setTitleAnnuncio(annuncio.getTitle());
         appliance.setUserId(user.getId());
-        String cvPath = fileService.savePdf(file, appliance.getCf());
+        appliance.setEmployerId(annuncio.getEmployerId());
+        String cvPath = fileService.savePdf(file);
         appliance.setCvPath(cvPath);
         JobApplianceDTO applianceDTO;
         try {
@@ -74,4 +83,26 @@ public class JobApplianceService {
         return fileService.delete(appliance.getCvPath());
     }
 
+    public org.springframework.core.io.Resource findFileByApplianceId(String authorization, String applianceId) {
+        JobAppliance appliance = applianceRepository.findById(applianceId)
+                .orElseThrow(() -> new ResourceNotFoundException(Resource.APPLIANCE));
+        Employer employer = employerService.extractEmployer(authorization);
+        if(!appliance.getEmployerId().equals(employer.getId())){
+            throw new UsersDontMatchException();
+        }
+        byte[] file = fileService.getFile(appliance.getCvPath());
+        return new ByteArrayResource(file);
+    }
+
+    public Page<JobApplianceDTOSimple> findAllAppliancesByAnnuncio(String authorization, String idAnnuncio, int page, int pageSize) {
+        Annuncio annuncio = annuncioRepository.findById(idAnnuncio)
+                .orElseThrow(() -> new ResourceNotFoundException(Resource.ANNUNCIO));
+        Employer employer = employerService.extractEmployer(authorization);
+        if(!annuncio.getEmployerId().equals(employer.getId())){
+            throw new UsersDontMatchException();
+        }
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<JobAppliance> appliances = applianceRepository.findAllByAnnuncioPaginated(idAnnuncio, pageable);
+        return appliances.map(applianceMapper::applianceToDtoSimple);
+    }
 }

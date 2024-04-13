@@ -29,7 +29,7 @@ public class EmployerSignUpRequest {
     @Size(min = 2, max = 100)
     private String sedeLegale;
 
-    @Size(min = 2, max = 100)
+    @Pattern(regexp = "^[0-9]{11}$")
     private String codiceFiscale;
 
     @NotBlank(message ="PIVA BLANk")

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Viewer</title>
+</head>
+<body>
+<div id="pdfContainer"></div>
+
+<script>
+    // Fetch the PDF file using the provided API endpoint
+    fetch('http://localhost:8080/rest/api/v0/employer/appliance/661ac3857c0b832fba60d2df/file')
+        .then(response => response.arrayBuffer())
+        .then(buffer => {
+            // Convert the ArrayBuffer to a Blob
+            const blob = new Blob([buffer], { type: 'application/pdf' });
+
+            // Create an <iframe> element to display the PDF content
+            const pdfContainer = document.getElementById('pdfContainer');
+            const iframe = document.createElement('iframe');
+            iframe.src = URL.createObjectURL(blob);
+            iframe.width = '100%';
+            iframe.height = '1000px';
+            iframe.frameBorder = '0';
+            pdfContainer.appendChild(iframe);
+        })
+        .catch(error => console.error('Error fetching PDF:', error));
+</script>
+
+</body>
+</html>
+

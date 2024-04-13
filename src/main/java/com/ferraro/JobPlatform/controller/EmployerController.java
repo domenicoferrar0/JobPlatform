@@ -1,10 +1,13 @@
 package com.ferraro.JobPlatform.controller;
 
 import com.ferraro.JobPlatform.dto.AnnuncioDTO;
+import com.ferraro.JobPlatform.dto.JobApplianceDTOSimple;
 import com.ferraro.JobPlatform.dto.request.AnnuncioRequest;
 import com.ferraro.JobPlatform.service.AnnuncioService;
+import com.ferraro.JobPlatform.service.JobApplianceService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +21,10 @@ public class EmployerController {
     @Autowired
     private AnnuncioService annuncioService;
 
-    //TODO TEST CREAzIONE ANNUNCI, APPLIANCE, VERIFICARE SALVATAGGIO DOCUMENT E PDF ASSOCIATI, VERIFICARE SE VENGONO CANCELLATI
+    @Autowired
+    private JobApplianceService applianceService;
 
+    //TODO SISTEMARE API SU POSTMAN E IMPLEMENTARE SWAGGER
 
     @PostMapping("/annuncio")
     public ResponseEntity<AnnuncioDTO> saveAnnuncio(@NonNull @RequestHeader("Authorization") String authorization,
@@ -50,5 +55,21 @@ public class EmployerController {
                                                                    @PathVariable("page") int currentPage){
         int pageSize = 10;
         return ResponseEntity.ok(annuncioService.findAnnunciByEmployer(authorization, currentPage, pageSize));
+    }
+
+    @GetMapping("/annuncio/{id}/appliances/{page}")
+    public ResponseEntity<Page<JobApplianceDTOSimple>> findAppliancesPreviw(@NonNull @RequestHeader("Authorization") String authorization,
+                                                                            @PathVariable("id") String idAnnuncio,
+                                                                            @PathVariable("page") int page){
+        int pageSize = 10;
+        return ResponseEntity.ok(applianceService.findAllAppliancesByAnnuncio(authorization, idAnnuncio, page, pageSize));
+    }
+
+
+    @GetMapping("/appliance/{applianceId}/file")
+    public ResponseEntity<Resource> findFileByAppliance(@NonNull @RequestHeader("Authorization") String authorization,
+                                                        @PathVariable("applianceId")String applianceId){
+        return ResponseEntity.ok(applianceService.findFileByApplianceId(authorization, applianceId));
+
     }
 }

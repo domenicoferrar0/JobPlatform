@@ -19,9 +19,13 @@ import java.util.Set;
 @NoArgsConstructor
 public class JobApplianceRequest {
 
+    @Size(min = 2, max = 35, message = "Formato non valido, minimo 2 caratteri, massimo 35")
+    @Pattern(regexp = "\\S(\\s*[a-zA-Z]+)*\\s*", message = "Formato nome non valido, rimuovi gli spazi in eccesso e i caratteri non autorizzati")
     @NotNull
     private String nome;
 
+    @Size(min = 2, max = 35, message = "Formato non valido, minimo 2 caratteri, massimo 35")
+    @Pattern(regexp = "\\S(\\s*[a-zA-Z]+)*\\s*", message = "Formato nome non valido, rimuovi gli spazi in eccesso e i caratteri non autorizzati")
     @NotNull
     private String cognome;
 
@@ -44,6 +48,7 @@ public class JobApplianceRequest {
     @NotNull
     private Country nazionalita;
 
+    @Size(min = 2, max = 300)
     private String indirizzo;
 
     private Set<Language> languages;
@@ -51,10 +56,8 @@ public class JobApplianceRequest {
     @Size(min = 1, max = 300)
     private String presentazione;
 
-    @NotNull
     @NotEmpty
     private Set<Formazione> formazione;
-
 
     private Set<WorkExperience> esperienzeLavorative;
 
