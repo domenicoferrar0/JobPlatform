@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout</title>
+</head>
+<body>
+<div id="message">You're about to get redirected...</div>
+
+<script>
+    // Function to make the API call and handle the response
+    function logoutAndRedirect() {
+        fetch('/rest/api/v0/user/logout', {
+            method: 'DELETE' // Assuming the logout endpoint uses POST method
+        })
+        .then(response => {
+            if (response.ok) {
+
+                    document.getElementById('message').innerText = 'Logout successfully!';
+                    setTimeout(function() {
+                        window.location.href = '/login';
+                    }, 2000);
+            } else {
+                // If response is not ok, display error message
+                document.getElementById('message').innerText = 'Failed to logout';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('message').innerText = 'Failed to logout';
+        });
+    }
+
+    // Call the logoutAndRedirect function when the page loads
+    window.onload = function() {
+        logoutAndRedirect();
+    };
+</script>
+</body>
+</html>

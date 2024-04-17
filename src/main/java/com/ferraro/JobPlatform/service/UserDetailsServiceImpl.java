@@ -27,7 +27,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if(!account.isEnabled()){
             throw new UserNotEnabledException();
         }
-
         Set<GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(account.getRole().toString()));
         return new org.springframework.security.core.userdetails.User(username, account.getPassword(), authorities);
     }

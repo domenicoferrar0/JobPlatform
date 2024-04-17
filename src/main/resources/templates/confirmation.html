@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Confirmation</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body {
+          margin-top: 10%;
+          text-align: center;
+          font-size: 50px;
+        }
+
+        #confirmationMessage{
+            color: black;
+            font
+        }
+
+    </style>
+</head>
+<body>
+<div id="confirmationMessage"></div>
+
+<script>
+    $(document).ready(function() {
+        var currentUrl = window.location.href;
+        var token = currentUrl.substring(currentUrl.length - 36);
+
+        $.ajax({
+            url: "/rest/api/v0/home/confirmation?token="+token,
+            type: "PUT",
+
+            success: function(response) {
+                // Success response
+                var message = response;
+                message += "<br>YOU CAN LOGIN <a href='http://localhost:8080/login'>HERE</a>";
+                $("#confirmationMessage").html(message);
+            },
+            error: function(xhr, status, error) {
+                // Error response
+                if (xhr.status === 404) {
+                    var message = xhr.responseText;
+                    $("#confirmationMessage").text(message);
+                } else {
+                    $("#confirmationMessage").text("An error occurred. Please try again.");
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>
+</body>
+</html>

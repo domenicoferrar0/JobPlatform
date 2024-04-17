@@ -15,4 +15,28 @@ public class ViewController {
     public String login(){
         return "login";
     }
+
+    @GetMapping("/home/registration")
+    public String signUp(){
+        return "user-registration";
+    }
+
+    @GetMapping("/home/employers/registration")
+    public String employerSignUp(){
+        return "employer-registration";
+    }
+    @GetMapping("/home/confirm")
+    public String confirm(){
+        return "confirmation";
+    }
+
+    @GetMapping("/user/home")
+    public String userHome(){
+        return "user-home";
+    }
+
+    @GetMapping("/user/logout")
+    public String logout(){
+        return "logout";
+    }
 }

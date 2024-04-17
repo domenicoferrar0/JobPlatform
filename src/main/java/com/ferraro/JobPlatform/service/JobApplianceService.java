@@ -17,6 +17,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class JobApplianceService {
     @Autowired
     private JobApplianceRepository applianceRepository;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Autowired
     private AnnuncioRepository annuncioRepository;
@@ -75,17 +79,21 @@ public class JobApplianceService {
 
     public boolean deleteAppliance(String applianceId, String authorization) {
         JobAppliance appliance = applianceRepository.findById(applianceId)
-                .orElseThrow(() -> new ResourceNotFoundException(Resource.APPLIANCE));
+                .orElseThrow(() -> new ResourceNotFoundException(Resource.APPLIANCE, applianceId));
         User user = userService.extractUser(authorization);
         if (!user.getId().equals(appliance.getUserId())) {
             throw new UsersDontMatchException();
         }
+        if(mongoTemplate.remove(appliance).getDeletedCount()<=0){
+            return false;
+        }
+
         return fileService.delete(appliance.getCvPath());
     }
 
     public org.springframework.core.io.Resource findFileByApplianceId(String authorization, String applianceId) {
         JobAppliance appliance = applianceRepository.findById(applianceId)
-                .orElseThrow(() -> new ResourceNotFoundException(Resource.APPLIANCE));
+                .orElseThrow(() -> new ResourceNotFoundException(Resource.APPLIANCE, applianceId));
         Employer employer = employerService.extractEmployer(authorization);
         if(!appliance.getEmployerId().equals(employer.getId())){
             throw new UsersDontMatchException();
@@ -96,7 +104,7 @@ public class JobApplianceService {
 
     public Page<JobApplianceDTOSimple> findAllAppliancesByAnnuncio(String authorization, String idAnnuncio, int page, int pageSize) {
         Annuncio annuncio = annuncioRepository.findById(idAnnuncio)
-                .orElseThrow(() -> new ResourceNotFoundException(Resource.ANNUNCIO));
+                .orElseThrow(() -> new ResourceNotFoundException(Resource.ANNUNCIO, idAnnuncio));
         Employer employer = employerService.extractEmployer(authorization);
         if(!annuncio.getEmployerId().equals(employer.getId())){
             throw new UsersDontMatchException();
@@ -104,5 +112,26 @@ public class JobApplianceService {
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<JobAppliance> appliances = applianceRepository.findAllByAnnuncioPaginated(idAnnuncio, pageable);
         return appliances.map(applianceMapper::applianceToDtoSimple);
+    }
+
+    public JobApplianceDTO findApplianceById(String authorization, String applianceId) {
+        JobApplianceDTO appliance = applianceRepository.findById(applianceId)
+                .map(applianceMapper::applianceToDto)
+                .orElseThrow(() -> new ResourceNotFoundException(Resource.APPLIANCE, applianceId));
+        Employer employer = employerService.extractEmployer(authorization);
+        if(!appliance.getEmployerId().equals(employer.getId())){
+            throw new UsersDontMatchException();
+        }
+        return appliance;
+
+    }
+
+    public Page<JobApplianceDTOSimple> findAppliancesByUser(String authorization, int currentPage, int pageSize) {
+        Pageable pageable = PageRequest.of(currentPage, pageSize);
+        User user = userService.extractUser(authorization);
+
+        return applianceRepository
+                .findByUserPaginated(user.getId(),pageable)
+                .map(applianceMapper::applianceToDtoSimple);
     }
 }

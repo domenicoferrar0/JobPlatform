@@ -58,8 +58,6 @@ public class EmployerService {
         Employer employer = employerMapper.requestToEmployer(request);
         employer.setRole(Role.ROLE_EMPLOYER);
         employer.setPassword(encoder.encode(employer.getPassword()));
-
-        //Viene salvato, il repository ritorna l'entità salvata che a sua volta viene mappata in DTO
         EmployerDTO newEmployer = employerMapper.employerToDto(employerRepository.save(employer));
         String token = accountService.createConfirmationToken(newEmployer.getId(), Role.ROLE_EMPLOYER);
         try {
@@ -67,8 +65,14 @@ public class EmployerService {
         } catch (MessagingException e) {
             throw new MailNotSentException();
         }
-        //Viene salvato, il repository ritorna l'entità salvata che a sua volta viene mappata in DTO
         return newEmployer;
+
+    }
+
+    public EmployerDTO findById(String employerId) {
+        return employerRepository.findById(employerId)
+                .map(employerMapper::employerToDto)
+                .orElseThrow(() -> new ResourceNotFoundException(Resource.EMPLOYER, employerId));
 
     }
 }

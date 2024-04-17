@@ -1,5 +1,6 @@
 package com.ferraro.JobPlatform.repository;
 
+import com.ferraro.JobPlatform.dto.JobApplianceDTO;
 import com.ferraro.JobPlatform.model.document.JobAppliance;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,4 +21,7 @@ public interface JobApplianceRepository extends MongoRepository<JobAppliance, St
 
     @Query("{'idAnnuncio': ?0}")
     Page<JobAppliance> findAllByAnnuncioPaginated(String idAnnuncio, Pageable pageable);
+
+    @Query("{'userId': ?0}")
+    Page<JobAppliance> findByUserPaginated(String id, Pageable pageable);
 }

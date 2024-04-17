@@ -57,7 +57,6 @@ public class FileService {
 
     public boolean delete(String cvPath) {
         File file = new File(PATH, cvPath);
-        System.out.println("/n PATH " + cvPath + "/n /n /n");
         try {
             return file.delete();
         } catch (SecurityException e) {

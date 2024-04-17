@@ -39,6 +39,7 @@ public class EmployerSignUpRequest {
     @Positive
     private Integer numeroDipendenti;
 
+    @NotNull
     private Settore settore;
 
     private FormaGiuridica formaGiuridica;

@@ -68,8 +68,8 @@ public class AnnuncioService {
             throw new UsersDontMatchException();
         }
         List<JobAppliance> appliances = applianceRepository.findAllByAnnuncioId(idAnnuncio);
-        Query query = new Query(Criteria.where("_id").is(idAnnuncio));
-        if (mongoTemplate.remove(query, Annuncio.class).getDeletedCount() > 0) {
+
+        if (mongoTemplate.remove(annuncio).getDeletedCount() > 0) {
             applianceRepository.deleteAll(appliances);
             return fileService.fileCleanUp(appliances);
 

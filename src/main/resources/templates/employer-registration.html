@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Registration</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+        }
+
+        h2 {
+          text-align: center;
+          margin-top: 20px;
+          margin-bottom: 50px;
+          color: black;
+        }
+
+        form {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 300px;
+          margin: 0 auto;
+          background: #ffffff;
+          padding: 20px;
+          border-radius: 15px;
+          box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+          display: block;
+          margin-bottom: 5px;
+        }
+
+        input, select {
+          width: 70%;
+          padding: 10px;
+          box-sizing: border-box;
+          border: 1px solid black;
+          border-radius: 15px;
+        }
+
+        #already {
+          color: #666666;
+          text-decoration: none;
+          margin-bottom: 20px;
+        }
+
+        #already:hover {
+          text-decoration: underline;
+        }
+
+        button {
+          width: 50%;
+          padding: 10px;
+          background-color: #007bff;
+          color: white;
+          border: none;
+          border-radius: 15px;
+          cursor: pointer;
+          margin-top: 50px;
+          margin-bottom: 40px;
+
+        }
+
+        button:hover {
+          background-color: #0056b3;
+        }
+
+        .error-message {
+          margin-bottom: 20px;
+          color: red;
+          margin-top: 10px;
+          text-align: center;
+        }
+
+        .overlay {
+          display: none;
+          position: fixed;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+          */ z-index: 999;
+        }
+
+        .overlay-content {
+          position: absolute;
+          top: 30%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background-color: white;
+          padding: 20px;
+          border-radius: 10px;
+          box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .close-btn {
+          position: absolute;
+          top: 5px;
+          right: 10px;
+          cursor: pointer;
+          font-size: 20px;
+          color: black;
+        }
+
+        .close-btn:hover {
+          color: red;
+        }
+
+        .overlay-content p {
+        margin: 0;
+        color: #333;
+        font-size: 18px;
+        line-height: 1.5;
+    }
+
+
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</head>
+
+<body>
+<div id="overlay" class="overlay">
+    <div class="overlay-content">
+        <span class="close-btn">×</span>
+        <p>Congratulazioni!, ti sei registrato correttamente, controlla la tua email per confermare</p>
+    </div>
+</div>
+
+<form id="registrationForm">
+    <h2>REGISTRATION</h2>
+    <label for="email"></label>
+    <input type="email" id="email" placeholder="Email" name="email" required>
+    <span id="emailError" class="error-message"></span>
+
+
+    <label for="password"></label>
+    <input type="password" id="password" placeholder="Password" name="password" required>
+    <span id="passwordError" class="error-message"></span>
+
+
+    <label for="nomeAzienda"></label>
+    <input type="text" id="nomeAzienda" placeholder="Nome Azienda" name="nomeAzienda" required>
+    <span id="nomeAziendaError" class="error-message"></span>
+
+
+    <label for="sedeLegale"></label>
+    <input type="text" id="sedeLegale" placeholder="Sede legale" name="sedeLegale" required>
+    <span id="sedeLegaleError" class="error-message"></span>
+
+    <label for="codiceFiscale"></label>
+    <input type="text" id="codiceFiscale" placeholder="Codice fiscale aziendale" name="codiceFiscale">
+    <span id="codiceFiscaleError" class="error-message"></span>
+
+    <label for="partitaIva"></label>
+    <input type="text" id="partitaIva" placeholder="Partita IVA" name="partitaIva" required>
+    <span id="partitaIvaError" class="error-message"></span>
+
+    <label for="numeroDipendenti"></label>
+    <input type="number" id="numeroDipendenti" placeholder="Numero dipendenti" name="numeroDipendenti">
+    <span id="numeroDipendentiError" class="error-message"></span>
+
+    <label for="settore"></label> <select
+        id="settore" name="settore" required>
+    <option disabled="disabled" selected value="" style="opacity: 50%">Seleziona settore</option>
+    <option
+            th:each="settore : ${T(com.ferraro.JobPlatform.enums.Settore).values()}"
+            th:value="${settore}" th:text="${settore.getSettore()}"></option>
+</select>
+    <span id="settoreError" class="error-message"></span>
+
+    <label for="formaGiuridica"></label> <select
+        id="formaGiuridica" name="formaGiuridica">
+    <option disabled="disabled" selected value=" ">Seleziona forma giuridica</option>
+    <option disabled="disabled" selected value="">Nessuna forma giuridica</option>
+    <option
+            th:each="formaGiuridica : ${T(com.ferraro.JobPlatform.enums.FormaGiuridica).values()}"
+            th:value="${formaGiuridica}" th:text="${formaGiuridica.getNome()}"></option>
+</select>
+    <span id="formaGiuridicaError" class="error-message"></span>
+
+    <a id="already" href="/login">Already registered?</a>
+    <button type="submit">Sign in</button>
+</form>
+
+<script>
+    $(document).ready(function () {
+$('#registrationForm').on('submit', function (event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+    const json = {};
+
+    formData.forEach((value, key) => {
+    if (value !== "") {
+        json[key] = value;
+        }
+    });
+
+    clearMessages();
+
+    $.ajax({
+        type: 'POST',
+        url: '/rest/api/v0/home/employer-signup',
+        contentType: 'application/json', // Specify content type
+        data: JSON.stringify(json), // Convert json object to JSON string
+        success: function (response) {
+            $('#overlay').show();
+        },
+        error: function (xhr, status, error) {
+            console.error(xhr);
+            if (xhr.status === 422) {
+                const errors = xhr.responseJSON;
+                for (const field in errors) {
+                    const errorMessage = errors[field];
+                    displayErrorMessage(field, errorMessage);
+                }
+            }
+            if (xhr.status === 409) {
+                const conflictMessage = xhr.responseText;
+                $('#emailError').text(conflictMessage);
+            }
+        }
+    });
+});
+
+ $('.close-btn').click(function() {
+        $('#overlay').hide();
+    });
+
+function clearMessages() {
+    $('.error-message').text('');
+}
+
+function displayErrorMessage(field, errorMessage) {
+        const errorElement = document.getElementById(`${field}Error`);
+        if (errorElement) {
+            errorElement.textContent = errorMessage;
+        }
+    }
+});
+
+</script>
+
+</body>
+</html>
