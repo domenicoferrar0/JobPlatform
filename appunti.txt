@@ -35,3 +35,6 @@ token=Bearer:eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjYWwyQG1haWwuY29tIiwiYXV0aG9yaXRpZX
 
 COOKIE EMPLOYER
 token=Bearer:eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbXBsb3llckBleGFtcGxlLmNvbSIsImF1dGhvcml0aWVzIjpbeyJhdXRob3JpdHkiOiJST0xFX0VNUExPWUVSIn1dLCJpYXQiOjE3MTMyOTQ5NjMsImV4cCI6MTcxNTg4Njk2M30.iAda25lXz7vjHz0bbDCOD-PKud8CDQqob6iCnByN6PE; Path=/; Max-Age=2592000; Expires=Thu, 16 May 2024 19:16:03 GMT; HttpOnly
+
+EMPLOYER 2
+token=Bearer:eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhemllbmRhQGV4YW1wbGUuY29tIiwiYXV0aG9yaXRpZXMiOlt7ImF1dGhvcml0eSI6IlJPTEVfRU1QTE9ZRVIifV0sImlhdCI6MTcxMzUzMzc4MCwiZXhwIjoxNzE2MTI1NzgwfQ.Fzp_48-pHmgffSEQikkJG5Me4bEipcoXwHBPS9Yo7Q0; Path=/; Max-Age=2592000; Expires=Sun, 19 May 2024 13:36:20 GMT; HttpOnly

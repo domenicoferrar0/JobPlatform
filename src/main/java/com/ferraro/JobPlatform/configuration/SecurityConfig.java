@@ -71,10 +71,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        log.info("\n EMPLOYER API\n", employerAPI);
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry->{
-                    registry.requestMatchers("/home/**", homeAPI+"/**")
+                    registry.requestMatchers("/home/**", homeAPI+"/**","/swagger-ui.html")
                             .permitAll();
 
                     registry.requestMatchers("/user/**", userAPI+"/**")

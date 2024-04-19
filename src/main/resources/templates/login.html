@@ -12,7 +12,7 @@
     <style>
         body {
           font-family: Arial, sans-serif;
-          background-color: #f4f4f4;
+          background-color: #9bc5f8;
         }
 
         h2 {
@@ -102,7 +102,7 @@
 
 <script>
     async function handleSuccess(response) {
-     const redirect = response.data.url;
+     const redirect = response.data;
      try {
          console.log('PRE LOG');
          window.location.href = redirect;

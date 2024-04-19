@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Set;
+
 @Document(collection = "users")
 @Getter
 @Setter
@@ -27,6 +29,8 @@ public class User extends Account {
     @Pattern(regexp = "^[A-Z][a-z]*(\\s+[A-Z][a-z]*)*$", message = "Formato nome non valido, rimuovi gli spazi in eccesso e i caratteri non autorizzati")
     @NotNull
     private String cognome;
+
+    private Set<String> favouriteAnnouncements;
 
 
 

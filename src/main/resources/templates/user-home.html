@@ -2,9 +2,223 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BENVENUTO USER</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Announcement List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #9bc5f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .announcement-list {
+            width: 45%;
+        }
+
+        .announcement {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+
+        }
+
+        .announcement h3 {
+            margin-top: 0;
+        }
+
+        .announcement p {
+            margin: 10px 0;
+        }
+
+        .announcement .publication-date {
+            font-style: italic;
+        }
+
+        .announcement .country {
+            font-weight: bold;
+        }
+
+        .announcement a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .announcement a:hover {
+            text-decoration: underline;
+        }
+
+        .announcement-details {
+            width: 45%; /* Adjust width as needed */
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-right: 5%;
+        }
+
+        .announcement-details h3 {
+            margin-top: 0;
+        }
+
+        .announcement-details p {
+            margin: 10px 0;
+        }
+        .pagination {
+            margin-bottom: 20px;
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            justify-content: left;
+        }
+
+        .pagination li {
+            margin-right: 5px; /* Add space between pagination items */
+        }
+
+        .pagination li a {
+            color: black;
+            background: #e8e8e9;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid black;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .pagination li a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .content-wrapper {
+            display: flex;
+            margin-left: 5%;
+
+        }
+
+    </style>
 </head>
 <body>
+<div class="content-wrapper">
+    <div class="clearfix">
+        <div class="hint-text">Showing <b id="numberOfElements"></b> out of <b id="totalElements"></b> entries</div>
+        <ul class="pagination">
+        </ul>
+    </div>
+    <div class="announcement-list">
+        <div class="list-content">
+            <!-- Announcements will be inserted here -->
+        </div>
+
+    </div>
+</div>
+    <div class="announcement-details">
+
+    </div>
+
+
+<script>
+    // Function to fetch announcement details
+    function fetchDetails(id) {
+        var baseUrl = '/rest/api/v0';
+
+        $.ajax({
+            url: baseUrl + '/home/annuncio/' + id,
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                console.log(data);
+                var detailsHTML = '<h3>' + data.title + '</h3>' +
+                                  '<p><strong>Employer:</strong> <a href="/home/employers/' + data.employerId + '">' + data.employerName + '</a></p>' +
+                                  '<p><strong>Country:</strong> ' + data.country + '</p>';
+
+                // Include nullable fields if present
+                if (data.description) {
+                    detailsHTML += '<p><strong>Description:</strong> ' + data.description + '</p>';
+                }
+
+                if (data.updateDate) {
+                    detailsHTML += '<p><strong>Last Updated:</strong> ' + data.updateDate + '</p>';
+                }
+
+                if (data.localita) {
+                    detailsHTML += '<p><strong>Location:</strong> ' + data.localita + '</p>';
+                }
+
+                if (data.modalita) {
+                    detailsHTML += '<p><strong>Modality:</strong> ' + data.modalita + '</p>';
+                }
+
+                if (data.disponibilita) {
+                    detailsHTML += '<p><strong>Availability:</strong> ' + data.disponibilita + '</p>';
+                }
+
+                // Append the details to the existing .announcement-details div
+                $('.announcement-details').html(detailsHTML);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching details:', error);
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        var baseUrl = '/rest/api/v0';
+        var currentPage = 1; // Start from page 1
+
+        // Function to fetch announcements for a specific page
+        function fetchData(page) {
+            $.ajax({
+                url: baseUrl + '/home/annunci/' + page,
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    var announcementsHTML = '';
+                    var totalPages = data.totalPages;
+                    $.each(data.content, function(index, announcement) {
+                        announcementsHTML += '<div class="announcement" onclick="fetchDetails(\'' + announcement.id + '\')">' +
+                            '<h3>' + announcement.title + '</h3>' +
+                            '<p><strong>Employer:</strong> <a href="/home/employers/' + announcement.employerId + '">' + announcement.employerName + '</a></p>' +
+                            '<p><strong>Publication Date:</strong> ' + announcement.publicationDate + '</p>' +
+                            '<p><strong>Country:</strong> ' + announcement.country + '</p>' +
+                            '</div>';
+                    });
+
+                    $('.announcement-list').empty();
+                    $('.announcement-list').html(announcementsHTML);
+                    $('.pagination').empty();
+
+                    for (var i = 1; i <= totalPages; i++) {
+                        $('.pagination').append('<li class="page-item"><a class="page-link">' + i + '</a></li>');
+                    }
+
+                    $('.page-link').click(function() {
+                        currentPage = $(this).text();
+                        fetchData(currentPage);
+                    });
+
+                    // Fetch details for the first announcement
+                    if (data.content.length > 0) {
+                        fetchDetails(data.content[0].id);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching data:', error);
+                }
+            });
+        }
+
+        // Fetch data for the first page on document ready
+        fetchData(currentPage);
+    });
+</script>
 
 </body>
 </html>

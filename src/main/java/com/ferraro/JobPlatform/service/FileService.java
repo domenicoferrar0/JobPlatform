@@ -25,9 +25,11 @@ public class FileService {
     @Value("${app.basePath}")
     private String PATH;
 
-    private final static Long MAX_SIZE = 1048576L;
 
+    private final Long MAX_SIZE = 1048576L; //10MB
 
+    /*La logica di validazione del formato del file
+    * viene effettuata tramite Tika */
     public boolean isValid(MultipartFile file) {
         if (file == null || file.isEmpty() || file.getSize() > MAX_SIZE) {
             return false;
@@ -44,6 +46,9 @@ public class FileService {
         return mediaType.equals(MediaType.application("pdf"));
     }
 
+    /*Il file viene salvato con un nome randomico
+    * e ritorna il nome del file in modo da poterlo
+    * assegnare all'appliance come referencing */
     public String savePdf(MultipartFile file) {
         String fileName = UUID.randomUUID().toString() + ".pdf";
         File destination = new File(PATH, fileName);
@@ -64,6 +69,7 @@ public class FileService {
         }
     }
 
+    //Per cancellare tutti i file in caso venga cancellato l'annuncio
     public boolean fileCleanUp(List<JobAppliance> appliances) {
         for (JobAppliance appliance : appliances) {
             delete(appliance.getCvPath());
@@ -72,7 +78,6 @@ public class FileService {
     }
 
     public byte[] getFile(String cvPath) {
-
         try {
             Path filePath = Paths.get(PATH, cvPath);
             return Files.readAllBytes(filePath);

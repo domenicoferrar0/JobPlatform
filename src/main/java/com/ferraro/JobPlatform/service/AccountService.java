@@ -31,12 +31,21 @@ public class AccountService {
     @Autowired
     private ConfirmationTokenRepository tokenRepository;
 
+    /*Account è la superclasse di User ed Employer,
+     non essendoci relazioni tra trabelle
+     ho optato per una classe di utility che mi
+     permettesse di effettuare operazioni comuni alle due classi
+     e a mantenere consistency nelle email come chiave unica comune*/
 
+
+    //booleano che controlla se la mail esiste in entrambi i repo
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email) ||
                 employerRepository.existsByEmail(email);
     }
 
+    /*In fase di autenticazione avevo bisogno di un
+    * Optional che potesse cercare in entrambi i DB */
     public Optional<Account> findByEmail(String email) {
         Optional<Account> account;
         account = userRepository.findByEmail(email)
@@ -48,6 +57,9 @@ public class AccountService {
         return account;
     }
 
+    /*Il token quando generato porta in riferimento il ruolo dell'utente
+    * in questo modo so in che repository cercare l'utente in fase di abilitazione
+    * dell'account  */
     @Transactional
     public boolean confirmToken(String token) {
         ConfirmationToken confirmationToken = tokenRepository.findByToken(token)
@@ -61,7 +73,7 @@ public class AccountService {
         }
         else {
             account = employerRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException(Resource.USER, id));
+                    .orElseThrow(() -> new ResourceNotFoundException(Resource.EMPLOYER, id));
         }
         account.setEnabled(true);
         mongoTemplate.save(account);
@@ -69,6 +81,8 @@ public class AccountService {
         return mongoTemplate.remove(query, ConfirmationToken.class).getDeletedCount() > 0;
     }
 
+    /*Il token viene salvato e ritorno il UUID di riferimento
+    * in modo da passarlo all'utente via mail */
     @Transactional
     public String createConfirmationToken(String userId, Role role) {
         ConfirmationToken token = new ConfirmationToken(userId, role);

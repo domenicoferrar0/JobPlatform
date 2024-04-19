@@ -109,7 +109,7 @@ public class JobApplianceService {
         if(!annuncio.getEmployerId().equals(employer.getId())){
             throw new UsersDontMatchException();
         }
-        Pageable pageable = PageRequest.of(page, pageSize);
+        Pageable pageable = PageRequest.of(page-1, pageSize);
         Page<JobAppliance> appliances = applianceRepository.findAllByAnnuncioPaginated(idAnnuncio, pageable);
         return appliances.map(applianceMapper::applianceToDtoSimple);
     }
@@ -127,7 +127,7 @@ public class JobApplianceService {
     }
 
     public Page<JobApplianceDTOSimple> findAppliancesByUser(String authorization, int currentPage, int pageSize) {
-        Pageable pageable = PageRequest.of(currentPage, pageSize);
+        Pageable pageable = PageRequest.of(currentPage-1, pageSize);
         User user = userService.extractUser(authorization);
 
         return applianceRepository

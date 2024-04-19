@@ -1,16 +1,10 @@
 package com.ferraro.JobPlatform.controller;
 
-import com.ferraro.JobPlatform.dto.AnnuncioDTO;
-import com.ferraro.JobPlatform.dto.EmployerDTO;
-import com.ferraro.JobPlatform.dto.LoginResponse;
-import com.ferraro.JobPlatform.dto.UserDTO;
+import com.ferraro.JobPlatform.dto.*;
 import com.ferraro.JobPlatform.dto.request.EmployerSignUpRequest;
 import com.ferraro.JobPlatform.dto.request.LoginRequest;
 import com.ferraro.JobPlatform.dto.request.UserSignUpRequest;
-import com.ferraro.JobPlatform.model.document.User;
 import com.ferraro.JobPlatform.service.*;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +21,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("${app.homeAPI}")
@@ -63,7 +58,7 @@ public class HomeController {
                 .ok(userService.saveUser(requestBody));
     }
 
-    @PostMapping("employer-signup")
+    @PostMapping("/employer-signup")
     public ResponseEntity<EmployerDTO> employerSignUp(@NonNull @RequestBody @Valid EmployerSignUpRequest requestBody) {
         return ResponseEntity
                 .ok(employerService.saveEmployer(requestBody));
@@ -81,7 +76,7 @@ public class HomeController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@NonNull @RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<?> login(@NonNull @RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response) {
         UserDetails user = userDetails.loadUserByUsername(loginRequest.getEmail());
         try {
             Authentication authentication = authManager
@@ -100,18 +95,19 @@ public class HomeController {
         System.out.println(cookie);
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         return ResponseEntity
-                .ok(new LoginResponse(user.getAuthorities()));
+                .ok(RedirectService.determineUrl(user.getAuthorities()));
     }
 
+    //TODO fare in modo che si possa cambiare pagina e messaggio funzionale in caso di no content
     @GetMapping("/annunci/{page}")
-    public ResponseEntity<Page<AnnuncioDTO>> getAllAnnunci(@RequestParam(value = "searchTerm", required = false) String searchTerm,
-                                                           @PathVariable("page") int currentPage) {
+    public ResponseEntity<Page<AnnuncioDTOSimple>> getAllAnnunci(@RequestParam(value = "searchTerm", required = false) String searchTerm,
+                                                                 @PathVariable("page") int currentPage) {
         int pageSize = 10;
         return ResponseEntity
                 .ok(annuncioService.findAllAnnunci(currentPage, pageSize, searchTerm));
     }
 
-    @GetMapping("annuncio/{id}")
+    @GetMapping("/annuncio/{id}")
     public ResponseEntity<AnnuncioDTO> findAnnuncioById(@PathVariable("id") String annuncioId) {
         return ResponseEntity
                 .ok(annuncioService.findAnnuncioById(annuncioId));
@@ -122,11 +118,6 @@ public class HomeController {
         return ResponseEntity.ok(employerService.findById(employerId));
     }
 
-    @GetMapping("/test")
-    public void printCookie(@CookieValue(name = "color", defaultValue = "dark") String color) {
-
-        System.out.println(color);
-    }
 
 
 }

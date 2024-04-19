@@ -1,6 +1,7 @@
 package com.ferraro.JobPlatform.controller;
 
 import com.ferraro.JobPlatform.dto.AnnuncioDTO;
+import com.ferraro.JobPlatform.dto.AnnuncioDTOSimple;
 import com.ferraro.JobPlatform.dto.JobApplianceDTO;
 import com.ferraro.JobPlatform.dto.JobApplianceDTOSimple;
 import com.ferraro.JobPlatform.dto.request.AnnuncioRequest;
@@ -30,7 +31,8 @@ public class EmployerController {
     @PostMapping("/annuncio")
     public ResponseEntity<AnnuncioDTO> saveAnnuncio(@NonNull @CookieValue(name = "token") String authorization,
                                                     @NonNull @Valid @RequestBody AnnuncioRequest requestBody) {
-        return ResponseEntity.ok(annuncioService.saveAnnuncio(authorization, requestBody));
+        return ResponseEntity
+                .ok(annuncioService.saveAnnuncio(authorization, requestBody));
     }
 
     @DeleteMapping("/annuncio/{id}")
@@ -41,21 +43,24 @@ public class EmployerController {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Si è verificato un errore, impossibile eliminare l'annuncio");
         }
-        return ResponseEntity.ok("Annuncio rimosso correttamente!");
+        return ResponseEntity
+                .ok("Annuncio rimosso correttamente!");
     }
 
     @PutMapping("/annuncio/{id}")
     public ResponseEntity<AnnuncioDTO> updateAnnuncio(@NonNull @CookieValue(name = "token") String authorization,
                                                       @PathVariable("id") String idAnnuncio,
                                                       @NonNull @Valid @RequestBody AnnuncioRequest requestBody){
-        return ResponseEntity.ok(annuncioService.updateAnnuncio(idAnnuncio, authorization, requestBody));
+        return ResponseEntity
+                .ok(annuncioService.updateAnnuncio(idAnnuncio, authorization, requestBody));
     }
 
     @GetMapping("/annunci/{page}")
-    public ResponseEntity<Page<AnnuncioDTO>>findAnnunciByEmployer(@NonNull @CookieValue(name = "token") String authorization,
-                                                                   @PathVariable("page") int currentPage){
+    public ResponseEntity<Page<AnnuncioDTOSimple>>findAnnunciByEmployer(@NonNull @CookieValue(name = "token") String authorization,
+                                                                        @PathVariable("page") int currentPage){
         int pageSize = 10;
-        return ResponseEntity.ok(annuncioService.findAnnunciByEmployer(authorization, currentPage, pageSize));
+        return ResponseEntity
+                .ok(annuncioService.findAnnunciByEmployer(authorization, currentPage, pageSize));
     }
 
     @GetMapping("/annuncio/{id}/appliances/{page}")
@@ -63,20 +68,24 @@ public class EmployerController {
                                                                             @PathVariable("id") String idAnnuncio,
                                                                             @PathVariable("page") int page){
         int pageSize = 10;
-        return ResponseEntity.ok(applianceService.findAllAppliancesByAnnuncio(authorization, idAnnuncio, page, pageSize));
+        return ResponseEntity
+                .ok(applianceService.findAllAppliancesByAnnuncio(authorization, idAnnuncio, page, pageSize));
     }
 
     @GetMapping("/appliance/{id}")
     public ResponseEntity<JobApplianceDTO> findApplianceById(@NonNull @CookieValue(name = "token") String authorization,
                                                              @PathVariable("id")String applianceId){
-        return ResponseEntity.ok(applianceService.findApplianceById(authorization, applianceId));
+        return ResponseEntity
+                .ok(applianceService.findApplianceById(authorization, applianceId));
     }
 
 
     @GetMapping("/appliance/{id}/file")
     public ResponseEntity<Resource> findFileByAppliance(@NonNull @CookieValue(name = "token") String authorization,
                                                         @PathVariable("id")String applianceId){
-        return ResponseEntity.ok(applianceService.findFileByApplianceId(authorization, applianceId));
+        System.out.println("\n \n ENDPOINT API FILE");
+        return ResponseEntity.
+                ok(applianceService.findFileByApplianceId(authorization, applianceId));
 
     }
 }

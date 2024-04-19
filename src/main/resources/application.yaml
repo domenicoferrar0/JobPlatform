@@ -5,6 +5,9 @@ spring:
       max-file-size: 1MB
       max-request-size: 1MB
   data:
+    web:
+      pageable:
+        one-indexed-parameters: true
     mongodb:
       uri: mongodb://localhost:27017/job_portal?replicaSet=mongoReplica
       auto-index-creation: true

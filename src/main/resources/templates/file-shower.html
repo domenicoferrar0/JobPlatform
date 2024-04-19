@@ -9,8 +9,9 @@
 <div id="pdfContainer"></div>
 
 <script>
-    // Fetch the PDF file using the provided API endpoint
-    fetch('http://localhost:8080/rest/api/v0/employer/appliance/662275c462da2f58aca8c614/file')
+    var currentUrl = window.location.href;
+    const applianceId = currentUrl.substring(currentUrl.length - 24);
+    fetch('http://localhost:8080/rest/api/v0/employer/appliance/'+ applianceId +'/file')
         .then(response => response.arrayBuffer())
         .then(buffer => {
             // Convert the ArrayBuffer to a Blob
@@ -25,7 +26,7 @@
             iframe.frameBorder = '0';
             pdfContainer.appendChild(iframe);
         })
-        .catch(error => console.error('Error fetching PDF:', error));
+        .catch(error => alert('Si è verificato un problema con la gestione del file'));
 </script>
 
 </body>
